@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,7 +92,11 @@ public class FiredepartmentController {
         } else {
             firedepartmentUuid = UUID.fromString(uuid);
         }
-        Page<Operation> operations = operationRepository.findByFiredepartmentFiltered(firedepartmentUuid, dateStart, dateEnd, pageable);
+
+        Instant dateStartFORCE = Instant.now().minusSeconds(7 * 24 * 60 * 60); // force last 7 days
+        Instant dateEndFORCE = Instant.now();
+
+        Page<Operation> operations = operationRepository.findByFiredepartmentFiltered(firedepartmentUuid, dateStartFORCE, dateEndFORCE, pageable);
         Page<OperationResponse> dto = operations.map(operationResponseMapper::fromOperation);
         return ResponseEntity.ok(dto);
     }
